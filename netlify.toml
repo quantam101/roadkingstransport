@@ -1,0 +1,20 @@
+# Netlify Configuration
+
+# Force all www traffic to non-www
+[[redirects]]
+  from = "https://www.roadkingstransport.us/*"
+  to = "https://roadkingstransport.us/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://www.roadkingstransport.us/*"
+  to = "https://roadkingstransport.us/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://roadkingstransport.us/*"
+  to = "https://roadkingstransport.us/:splat"
+  status = 301
+  force = true

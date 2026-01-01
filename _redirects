@@ -1,0 +1,4 @@
+# Force HTTPS + non-www
+http://roadkingstransport.us/*  https://roadkingstransport.us/:splat  301!
+http://www.roadkingstransport.us/*  https://roadkingstransport.us/:splat  301!
+https://www.roadkingstransport.us/*  https://roadkingstransport.us/:splat  301!

@@ -1,0 +1,19 @@
+{
+  "product": "Already Here LLC Website",
+  "channel": "production",
+  "updated_utc": "2026-01-01T15:33:41Z",
+  "entries": [
+    {
+      "version": "1.0.0",
+      "date": "2026-01-01",
+      "changes": [
+        "Production-ready static website with PWA install support (offline-capable).",
+        "Integrated local analytics dashboard (no external setup).",
+        "SEO: OpenGraph, Twitter cards, JSON-LD, sitemap, robots, canonical URL pattern.",
+        "Security: CSP + hardened security headers via Netlify/Vercel configs.",
+        "Lifelong Catch and Correct side panel with site self-audit and Codex-style improvement suggestions.",
+        "Changelog viewer built-in."
+      ]
+    }
+  ]
+}

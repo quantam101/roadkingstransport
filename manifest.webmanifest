@@ -1,0 +1,28 @@
+{
+  "name": "Already Here LLC \u2014 IT Infrastructure Services",
+  "short_name": "Already Here IT",
+  "start_url": "/?source=pwa",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
+  "description": "Professional IT infrastructure services: managed IT, network security, cloud & backup, and on-site support.",
+  "icons": [
+    {
+      "src": "/assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/assets/icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": [
+    "business",
+    "productivity",
+    "utilities"
+  ],
+  "lang": "en-US"
+}

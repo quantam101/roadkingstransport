@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b1220" />
+  <title>Privacy — Already Here LLC</title>
+  <meta name="robots" content="index,follow" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+<header>
+  <div class="container nav">
+    <a class="brand" href="/">
+      <span class="brand-badge" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M7 15c0-3 2.5-5.5 5.5-5.5H17V12h-4.5C11 12 10 13 10 14.5V16H7v-1z" fill="currentColor" opacity=".9"/><path d="M17 9c0 3-2.5 5.5-5.5 5.5H7V12h4.5C13 12 14 11 14 9.5V8h3v1z" fill="currentColor" opacity=".65"/></svg>
+      </span>
+      <span>Already Here LLC</span>
+    </a>
+    <div class="actions">
+      <a class="btn ghost" href="/analytics.html">Analytics</a>
+      <button class="btn" id="openLcc">Lifelong Catch and Correct</button>
+    </div>
+  </div>
+</header>
+
+<main class="container section">
+  <h1>Privacy</h1>
+  <p class="lead">This site is designed to run without third-party trackers by default.</p>
+
+  <div class="card">
+    <h3>What we collect</h3>
+    <p>By default, the site stores a minimal, local-only analytics log in your browser (LocalStorage). This data does not leave your device unless you export it manually.</p>
+    <div class="meta">
+      <span class="pill">Local-only events</span>
+      <span class="pill">No cookies required</span>
+      <span class="pill">No external SDKs</span>
+    </div>
+  </div>
+
+  <div style="height:14px"></div>
+
+  <div class="card">
+    <h3>Contact messages</h3>
+    <p>The contact form can be configured to open your email client (mailto). If no mailto address is configured, messages are stored locally on your device so nothing is transmitted.</p>
+  </div>
+
+  <div style="height:14px"></div>
+
+  <div class="card">
+    <h3>Security</h3>
+    <p>When deployed on a proper host, this package includes recommended security headers (CSP, HSTS, clickjacking protection, MIME sniffing protection). See <span class="pill">_headers</span> and <span class="pill">vercel.json</span>.</p>
+  </div>
+</main>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<!-- Lifelong Catch and Correct drawer -->
+<aside id="lccDrawer" class="drawer" aria-label="Lifelong Catch and Correct">
+  <div class="drawer-top">
+    <div>
+      <div class="drawer-title">Lifelong Catch and Correct</div>
+      <div class="small">Press <span class="kbd">Ctrl</span> + <span class="kbd">K</span> to toggle</div>
+    </div>
+    <button class="btn" id="closeLcc">Close</button>
+  </div>
+  <div class="drawer-body">
+    <div class="small">On-page self-audit + improvement suggestions.</div>
+    <div style="height:10px"></div>
+    <div class="audit" id="auditWrap"></div>
+  </div>
+  <div class="drawer-foot">
+    <div style="display:flex; gap:10px; flex-wrap:wrap">
+      <button class="btn primary" id="rerunAudit">Re-run audit</button>
+      <button class="btn" id="openChangelog">Changelog</button>
+    </div>
+  </div>
+</aside>
+
+<div id="modal" class="modal" role="dialog" aria-modal="true" aria-label="Changelog">
+  <div class="modal-card">
+    <div class="modal-head">
+      <b id="modalTitle">Modal</b>
+      <button class="btn" id="modalClose">Close</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script src="/app.js"></script>
+</body>
+</html>

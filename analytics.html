@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b1220" />
+  <title>Analytics — Already Here LLC</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+<header>
+  <div class="container nav">
+    <a class="brand" href="/">
+      <span class="brand-badge" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M7 15c0-3 2.5-5.5 5.5-5.5H17V12h-4.5C11 12 10 13 10 14.5V16H7v-1z" fill="currentColor" opacity=".9"/><path d="M17 9c0 3-2.5 5.5-5.5 5.5H7V12h4.5C13 12 14 11 14 9.5V8h3v1z" fill="currentColor" opacity=".65"/></svg>
+      </span>
+      <span>Already Here LLC</span>
+    </a>
+    <div class="actions">
+      <a class="btn ghost" href="/privacy.html">Privacy</a>
+      <button class="btn" id="openLcc">Lifelong Catch and Correct</button>
+    </div>
+  </div>
+</header>
+
+<main class="container section">
+  <h1>Local analytics dashboard</h1>
+  <p class="lead">This dashboard reads events stored in your browser only. No external services, no keys, no setup.</p>
+
+  <div class="split">
+    <div class="card">
+      <h3>Summary</h3>
+      <p class="small" id="summaryLine">Loading…</p>
+      <hr class="sep" />
+      <div class="small"><b>Events by type</b></div>
+      <div class="list" id="byEvent"></div>
+      <hr class="sep" />
+      <div class="small"><b>Events by day</b></div>
+      <div class="list" id="byDay"></div>
+    </div>
+
+    <div class="card">
+      <h3>Export / clear</h3>
+      <p class="small">Export a JSON file for recordkeeping, or clear local analytics data.</p>
+      <div style="height:10px"></div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <button class="btn primary" id="exportBtn">Export JSON</button>
+        <button class="btn" id="clearBtn">Clear</button>
+      </div>
+      <div style="height:14px"></div>
+      <div class="small"><b>Most recent events</b></div>
+      <div style="height:10px"></div>
+      <div class="panel" style="max-height: 360px; overflow:auto">
+        <pre id="recent"></pre>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<!-- Lifelong Catch and Correct drawer -->
+<aside id="lccDrawer" class="drawer" aria-label="Lifelong Catch and Correct">
+  <div class="drawer-top">
+    <div>
+      <div class="drawer-title">Lifelong Catch and Correct</div>
+      <div class="small">Press <span class="kbd">Ctrl</span> + <span class="kbd">K</span> to toggle</div>
+    </div>
+    <button class="btn" id="closeLcc">Close</button>
+  </div>
+  <div class="drawer-body">
+    <div class="small">On-page self-audit + improvement suggestions.</div>
+    <div style="height:10px"></div>
+    <div class="audit" id="auditWrap"></div>
+  </div>
+  <div class="drawer-foot">
+    <div style="display:flex; gap:10px; flex-wrap:wrap">
+      <button class="btn primary" id="rerunAudit">Re-run audit</button>
+      <button class="btn" id="openChangelog">Changelog</button>
+    </div>
+  </div>
+</aside>
+
+<div id="modal" class="modal" role="dialog" aria-modal="true" aria-label="Changelog">
+  <div class="modal-card">
+    <div class="modal-head">
+      <b id="modalTitle">Modal</b>
+      <button class="btn" id="modalClose">Close</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+(() => {
+  'use strict';
+  const toast = (msg) => {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.classList.remove('show'), 2600);
+  };
+
+  const KEY = 'ah_analytics_v1';
+  const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } };
+
+  const rows = load();
+  const byEvent = new Map();
+  const byDay = new Map();
+
+  for (const r of rows) {
+    byEvent.set(r.event, (byEvent.get(r.event) || 0) + 1);
+    const day = (r.t || '').slice(0,10);
+    byDay.set(day, (byDay.get(day) || 0) + 1);
+  }
+
+  const total = rows.length;
+  document.getElementById('summaryLine').textContent = `Total events stored locally: ${total}`;
+
+  const renderList = (map, targetId) => {
+    const target = document.getElementById(targetId);
+    target.innerHTML = '';
+    const entries = [...map.entries()];
+    entries.sort((a,b) => (b[1]-a[1]) || String(a[0]).localeCompare(String(b[0])));
+    for (const [k,v] of entries) {
+      const div = document.createElement('div');
+      div.className = 'li';
+      div.innerHTML = `<div class="dot"></div><div><b>${k}</b><span>${v} event(s)</span></div>`;
+      target.appendChild(div);
+    }
+    if (!entries.length) {
+      const div = document.createElement('div');
+      div.className = 'li';
+      div.innerHTML = `<div class="dot"></div><div><b>No data yet</b><span>Browse the site to generate events.</span></div>`;
+      target.appendChild(div);
+    }
+  };
+
+  renderList(byEvent, 'byEvent');
+  renderList(byDay, 'byDay');
+
+  const recent = rows.slice(-50).reverse();
+  document.getElementById('recent').textContent = recent.map(r => JSON.stringify(r)).join('\n');
+
+  document.getElementById('exportBtn').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(rows, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'already-here-analytics.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('Exported JSON');
+  });
+
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    localStorage.removeItem(KEY);
+    toast('Cleared local analytics');
+    setTimeout(() => location.reload(), 400);
+  });
+})();
+</script>
+
+<script src="/app.js"></script>
+</body>
+</html>

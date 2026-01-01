@@ -8,20 +8,43 @@ HOST_WWW="www.roadkingstransport.us"
 fail() { echo "FAIL: $1"; exit 1; }
 ok() { echo "OK: $1"; }
 
-# 1) Redirect checks
+print_redirect_trace () {
+  local url="$1"
+  echo "---- Redirect trace for $url ----"
+  curl -sS -I -L "$url" | awk '
+    /^HTTP\// { print }
+    tolower($1)=="location:" { print }
+  '
+  echo "--------------------------------"
+}
+
 check_redirect () {
   local from="$1"
   local expected_prefix="$2"
 
-  # Follow redirects and capture the final effective URL
+  # Follow redirects and capture final URL
   local final
   final="$(curl -sS -L -o /dev/null -w "%{url_effective}" "$from")"
 
-  [[ -n "$final" ]] || fail "No final URL for $from"
-  [[ "$final" == "$expected_prefix"* ]] || fail "Bad redirect chain for $from -> $final (expected $expected_prefix...)"
-  ok "Redirect $from -> $final"
+  if [[ -z "$final" ]]; then
+    echo "FAIL: No final URL for $from"
+    print_redirect_trace "$from"
+    exit 1
+  fi
+
+  if [[ "$final" != "$expected_prefix"* ]]; then
+    echo "FAIL: Bad redirect chain"
+    echo "  From:     $from"
+    echo "  Expected: $expected_prefix..."
+    echo "  Final:    $final"
+    print_redirect_trace "$from"
+    exit 1
+  fi
+
+  echo "OK: Redirect $from -> $final"
 }
 
+# 1) Redirect checks
 check_redirect "http://$HOST_NONWWW" "$CANONICAL"
 check_redirect "http://$HOST_WWW"    "$CANONICAL"
 check_redirect "https://$HOST_WWW"   "$CANONICAL"

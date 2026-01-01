@@ -12,11 +12,14 @@ ok() { echo "OK: $1"; }
 check_redirect () {
   local from="$1"
   local expected_prefix="$2"
-  local loc
-  loc="$(curl -sI "$from" | awk -F': ' 'tolower($1)=="location"{print $2}' | tr -d '\r' | tail -n 1)"
-  [[ -n "$loc" ]] || fail "No Location header for $from"
-  [[ "$loc" == "$expected_prefix"* ]] || fail "Bad redirect for $from -> $loc (expected $expected_prefix...)"
-  ok "Redirect $from -> $loc"
+
+  # Follow redirects and capture the final effective URL
+  local final
+  final="$(curl -sS -L -o /dev/null -w "%{url_effective}" "$from")"
+
+  [[ -n "$final" ]] || fail "No final URL for $from"
+  [[ "$final" == "$expected_prefix"* ]] || fail "Bad redirect chain for $from -> $final (expected $expected_prefix...)"
+  ok "Redirect $from -> $final"
 }
 
 check_redirect "http://$HOST_NONWWW" "$CANONICAL"

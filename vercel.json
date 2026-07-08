@@ -1,4 +1,17 @@
 {
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.roadkingstransport.us"
+        }
+      ],
+      "destination": "https://roadkingstransport.us/:path*",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
